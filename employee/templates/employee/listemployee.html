@@ -1,0 +1,98 @@
+{% extends 'employee/base.html'%}
+{%block title%}
+{{title}}
+{%endblock title%}
+{%block content%}
+<a href="{% url 'addemployee'%}"> add employee</a>
+	<table class = 'table'>
+		<tr>
+			<thead  class= 'text-primary'>
+			<th>
+				No
+			</th>
+			<th>
+				employee
+			</th>
+			<th>
+				employee No
+			</th>
+			<th>
+				Nhif
+			</th>
+			<th>
+				Dirt of birth
+			</th>
+			<th>
+				ID number
+			</th>
+			<th>
+				job title
+			</th>
+			<th>
+				passport no
+			</th>
+			<th>
+				home county
+			</th>
+			<th>
+				county of residence
+			</th>
+			<th>
+				salary
+			</th>
+			<th>
+				update
+			</th>
+			<th>
+				delete
+			</th>
+			</thead>
+		</tr>
+	
+			{%for object in allemployee%}
+				<tr>
+			<td>
+				{{forloop.counter}}
+			</td>
+			<td>
+				{{object.user}}
+			</td>
+			<td>
+				<a href="{% url 'detailsemployee' object.id%}">{{object.EmployeeNo}}</a>
+			</td>
+			<td>
+				{{object.Nhif}}
+			</td>
+			<td>
+				{{object.DOE}}
+			</td>
+			<td>
+				{{object.IDNO}}
+			</td>
+			<td>
+				{{object.Jobtitle}}
+			</td>
+			
+			<td>
+				{{object.PassportNo}}
+			</td>
+			<td>
+				{{object.Homecounty}}
+			</td>
+			<td>
+				{{object.Countyresidence}}
+			</td>
+			<td>
+				{{object.salary}}
+			</td>
+			<td>
+				<a href="{% url 'updateemployee' object.id %}">update</a>
+			</td>
+			<td>
+				<a href="{% url 'deleteemployee' object.id %}"> delete</a>
+			</td>
+			</tr>
+			{%endfor%}	
+	</table>
+{%endblock%}
+

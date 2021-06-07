@@ -1,0 +1,44 @@
+{% extends 'employee/base.html'%}
+{%block title%}
+{{title}}
+{%endblock title%}
+{%block content%}
+<a href="{% url 'addDepartment' %}"> add department</a>
+	<table class="table">
+		<tr>
+			<thead class=" text-primary">
+			<th>
+				No
+			</th>
+			<th>
+				Name
+			</th>
+			<th>
+				update
+			</th>
+			<th>
+				delete
+			</th>
+		</thead>
+		</tr>
+	
+			{%for listdepart in listdepart%}
+				<tr>
+			<td>
+				{{forloop.counter}}
+			</td>
+			<td>
+				{{listdepart.Name}}
+			</td>
+			<td>
+				<a href="{% url 'updatedepart' listdepart.id %}">update</a>
+			</td>
+			<td>
+				<a href="{% url 'deletedepart' listdepart.id %}"> delete</a>
+			</td>
+			</tr>
+			{%endfor%}
+		
+	</table>
+{%endblock%}
+

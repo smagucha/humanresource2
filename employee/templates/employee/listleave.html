@@ -1,0 +1,81 @@
+{% extends 'employee/base.html'%}
+{%load static%}
+{%block title%}
+{{title}}
+{%endblock title%}
+{%block content%}
+<a href="{% url 'addleave' %}"> add leave</a>
+	<table class ='table'>
+		<tr>
+			<thead class='text-primary'>
+			<th>
+				No
+			</th>
+			<th>
+				user
+			</th>
+			<th>
+				leave type
+			</th>
+			<th>
+				leave days
+			</th>
+			<th>
+				remaining days
+			</th>
+			<th>
+				leaves applied
+			</th>
+			<th>
+				start of leave
+			</th>
+			<th>
+				approved
+			</th>
+			<th>
+				update
+			</th>
+			<th>
+				delete
+			</th>
+			</thead>
+		</tr>
+	
+			{%for listdepart in allleave%}
+				<tr>
+			<td>
+				{{forloop.counter}}
+			</td>
+			<td>
+				{{listdepart.user}}
+			</td>
+			<td>
+				{{listdepart.typeofleave}}
+			</td>
+			<td>
+				{{listdepart.leavedays}}
+			</td>
+			<td>
+				{{listdepart.remainingdays}}
+			</td>
+			<td>
+				{{listdepart.leavedatesapplied}}
+			</td>
+			<td>
+				{{listdepart.Dateofleaveapplied}}
+			</td>
+			<td>
+				{{listdepart.approved}}
+			</td>
+			<td>
+				<a href="{% url 'updateleave' listdepart.id %}">update</a>
+			</td>
+			<td>
+				<a href="{% url 'deleteleave' listdepart.id %}"> delete</a>
+			</td>
+			</tr>
+			{%endfor%}
+		
+	</table>
+{%endblock%}
+

@@ -1,0 +1,15 @@
+{% extends 'employee/base.html'%}
+{%block title%}
+{{title}}
+{%endblock title%}
+{%block content%}
+	<p><b>employment number: </b>{{obj.EmployeeNo}}</p>
+	<p><b>Nhif: </b>{{obj.Nhif}}</p>
+	<p><b>Dirth of Birth:</b>{{obj.DOE}}</p>
+	<p><b>ID number: </b>{{obj.IDNO}}</p>
+	<p><b>job tittle: </b>{{obj.Jobtittle}}</p>
+	<p><b>Passport Number: </b>{{obj.PassportNo}}</p>
+	<p><b>Home county: </b>{{obj.Homecounty}}</p>
+	<p><b>County of reidence: </b>{{obj.Countyresidence}}</p>
+	<p><b>Salary: </b>{{obj.salary}}</p>
+{%endblock%}

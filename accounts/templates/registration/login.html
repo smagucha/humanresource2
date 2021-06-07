@@ -1,0 +1,46 @@
+{%extends 'accounts/base.html'%}
+{%load static%}
+{%block content%}
+<link href="{% static 'css/login.css' %}"  rel = 'stylesheet'>
+   <form method="POST" >
+    {% csrf_token %}
+  <h1>Employer Log in</h1>
+  <div class="inset">
+  <!-- <p>
+      <label for="email">USERNAME</label>
+      <input type="text" name="email" id="email">
+    </p>
+    <p>
+      <label for="password">PASSWORD</label>
+      <input type="password" name="password" id="password">
+    </p> -->
+    {{form}}
+  </div>
+  <p class="p-container">
+    <span>Forgot password ?</span>
+    <input type="submit" name="go" id="go" value="Log in">
+  </p>
+</form>
+
+
+
+
+
+  <!-- <form class="modal-content animate" method="post" action="">
+    <div class="container">
+    {% csrf_token %}
+    {{form}}
+    <button type="submit">login</button>
+    <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
+      </label>
+      <span class="psw">
+        create an account with us  <a href="#">sign up</a>
+      </span>
+    </div>
+    <div class="container" style="background-color:#f1f1f1">
+      <button type="button"  class="cancelbtn">Cancel</button>
+      <span class="psw">Forgot <a href="/accounts/reset_password/">password?</a></span>
+    </div>
+  </form> -->
+{%endblock%}

@@ -1,0 +1,12 @@
+{% extends 'employee/base.html'%}
+{% load crispy_forms_tags %}
+{%block title%}
+{{title}}
+{%endblock title%}
+{%block content%}
+	<form method='POST'>
+		{% csrf_token %}
+		{{form|crispy}}
+		<input type="submit" name="submit">
+	</form>
+{%endblock%}

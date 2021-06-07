@@ -1,0 +1,44 @@
+{% extends 'employee/base.html'%}
+{%block title%}
+{{title}}
+{%endblock title%}
+{%block content%}
+<a href="{% url 'Adddisciplinary'%}"> add disciplinary</a>
+	<table class ='table'>
+		<tr>
+			<thead class=" text-primary">
+			<th>
+				No
+			</th>
+			<th>
+				user
+			</th>
+			<th>
+				description
+			</th>
+			<th>
+				delete
+			</th>
+			</thead>
+		</tr>
+	
+			{%for lisdisc in lis%}
+				<tr>
+			<td>
+				{{forloop.counter}}
+			</td>
+			<td>
+				{{lisdisc.user}}
+			</td>
+			<td>
+				{{lisdisc.description}}
+			</td>
+			<td>
+				<a href="{% url 'deleteleave' lisdisc.id %}"> delete</a>
+			</td>
+			</tr>
+			{%endfor%}
+		
+	</table>
+{%endblock%}
+ 
