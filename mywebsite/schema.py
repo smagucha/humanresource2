@@ -5,6 +5,8 @@ from employee.models import Employee, Leave, Disciplinary, Skills
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 import graphql_jwt
+# import users.schema
+# import tracks.schema
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -42,7 +44,8 @@ class Query(graphene.ObjectType):
     all_displinary = graphene.List(DisciplinaryType)
     all_skills = graphene.List(SkillsType)
     employee = graphene.Field(EmployeeType, employee_id =graphene.Int())
-    user=graphene.List(UserType)
+    me = graphene.Field(UserType)
+    users = graphene.List(UserType)
  
     def resolve_all_employee(root, info):
         # We can easily optimize query count in the resolve method
@@ -63,14 +66,14 @@ class Query(graphene.ObjectType):
         # We can easily optimize query count in the resolve method
         return Skills.objects.all()
 
-    def resolve_users(root, info):
+    def resolve_users(self, info):
         return User.objects.all()
 
-    # def resolve_me(self, info):
-    #     user = info.context.user
-    #     if user.is_anonymous:
-    #         raise Exception('Authentication Failure!')
-    #     return user
+    def resolve_me(self, info):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception('Authentication Failure!')
+        return user
 
 
 
@@ -111,136 +114,96 @@ class CreateUser(graphene.Mutation):
 # 	update_leave = LeaveMutation.Field()
 
 
-# class EmployeeInput(graphene.InputObjectType):
-#     user =graphene.ID()
-#     EmployeeNo = graphene.Int()
-#     Nhif = graphene.String()
-#     DOE = graphene.Date()
-#     IDNO= graphene.Int()
-#     Jobtitle = graphene.String()
-#     PassportNo=graphene.String()
-#     Homecounty=graphene.String()
-#     Countyresidence=graphene.String()
-#     salary = graphene.Int()
-
-# class CreateEmployee(graphene.Mutation):
-#     class Arguments:
-#         employee_data = EmployeeInput(required=True)
-
-#     employee = graphene.Field(EmployeeType)
-
-#     @staticmethod
-#     def mutate(root, info, employee_data=None):
-#         employee_instance = Employee( 
-#             user_id =User.objects.get(id = employee_data.user),
-#             user = employee_data.user_id,
-#             EmployeeNo = employee_data.EmployeeNo,
-#             Nhif = employee_data.Nhif,
-#             DOE = employee_data.DOE,
-#             IDNO= employee_data.IDNO,
-#             Jobtitle = employee_data.Jobtitle,
-#             PassportNo=employee_data.PassportNo,
-#             Homecounty=employee_data.Homecounty,
-#             Countyresidence=employee_data.Countyresidence,
-#             salary = employee_data.salary
-#         )
-#         employee_instance.save()
-#         return CreateEmployee(employee=employee_instance)
-
-# class UpdateEmployee(graphene.Mutation):
-#     class Arguments:
-#         employee_data = EmployeeInput(required=True)
-
-#     employee = graphene.Field(EmployeeType)
-
-#     @staticmethod
-#     def mutate(root, info, employee_data=None):
-
-#         employee_instance = Employee.objects.get(pk=employee_data.id)
-
-#         if employee_instance:
-#             user = employee_data.user,
-#             EmployeeNo = employee_data.EmployeeNo,
-#             Nhif = employee_data.Nhif,
-#             DOE = employee_data.DOE,
-#             IDNO= employee_data.IDNO,
-#             Jobtitle = employee_data.Jobtitle,
-#             PassportNo=employee_data.PassportNo,
-#             Homecounty=employee_data.Homecounty,
-#             Countyresidence=employee_data.Countyresidence,
-#             salary = employee_data.salary
-#             employee_instance.save()
-
-#             return UpdateEmployee(employee=employee_instance)
-#         return UpdateEmployee(employee=None)
-
-
-# class DeleteEmployee(graphene.Mutation):
-#     class Arguments:
-#         id = graphene.ID()
-
-#     employee = graphene.Field(EmployeeType)
-
-#     @staticmethod
-#     def mutate(root, info, id):
-#         employee_instance = Employee.objects.get(pk=id)
-#         employee_instance.delete()
-
-#         return None
-
-class UserInput(graphene.InputObjectType):
-    username = graphene.String()
-  
-
-class EmployeeInput(graphene.InputObjectType):
-    user=graphene.String()
-    EmployeeNo = graphene.Int()
-    Nhif = graphene.String()
-    DOE = graphene.Date()
-    IDNO= graphene.Int()
-    Jobtitle = graphene.String()
-    PassportNo=graphene.String()
-    Homecounty=graphene.String()
-    Countyresidence=graphene.String()
-    salary = graphene.Int()
-
 class CreateEmployee(graphene.Mutation):
 
     class Arguments:
-        employee_data = EmployeeInput(required=True)
+        user_id =graphene.Int()
+        EmployeeNo = graphene.Int()
+        Nhif = graphene.String()
+        DOE = graphene.Date()
+        IDNO= graphene.Int()
+        Jobtitle = graphene.String()
+        PassportNo=graphene.String()
+        Homecounty=graphene.String()
+        Countyresidence=graphene.String()
+        salary = graphene.Int()
 
     employee = graphene.Field(EmployeeType)
 
     @classmethod
-    def mutate(self,root, info, employee_data=None):
+    def mutate(self,root, info, user_id,EmployeeNo,Nhif,DOE ,IDNO,Jobtitle ,PassportNo,Homecounty,Countyresidence,salary):
         employee_instance= Employee( 
-            user =employee_data.user,
-            EmployeeNo = employee_data.EmployeeNo,
-            Nhif = employee_data.Nhif,
-            DOE =employee_data.DOE,
-            IDNO= employee_data.IDNO,
-            Jobtitle =employee_data.Jobtitle,
-            PassportNo=employee_data.PassportNo,
-            Homecounty=employee_data.Homecounty,
-            Countyresidence=employee_data.Countyresidence,
-            salary =employee_data.salary
+            user_id = user_id,
+            EmployeeNo = EmployeeNo,
+            Nhif = Nhif,
+            DOE =DOE,
+            IDNO= IDNO,
+            Jobtitle =Jobtitle,
+            PassportNo=PassportNo,
+            Homecounty=Homecounty,
+            Countyresidence=Countyresidence,
+            salary =salary,
         )
         employee_instance.save()
         return CreateEmployee(employee=employee_instance)
 
+class UpdateEmployee(graphene.Mutation):
+    class Arguments:
+        employee_id = graphene.Int()
+        user_id =graphene.Int()
+        EmployeeNo = graphene.Int()
+        Nhif = graphene.String()
+        DOE = graphene.Date()
+        IDNO= graphene.Int()
+        Jobtitle = graphene.String()
+        PassportNo=graphene.String()
+        Homecounty=graphene.String()
+        Countyresidence=graphene.String()
+        salary = graphene.Int()
+
+    employee = graphene.Field(EmployeeType)
+    success = False
+
+    @staticmethod
+    def mutate(root, info, employee_id,user_id,EmployeeNo,Nhif,DOE ,IDNO,Jobtitle ,PassportNo,Homecounty,Countyresidence,salary):
+        employee_instance = Employee.objects.get(pk=employee_id)
+        employee_instance.user_id = user_id,
+        employee_instance.EmployeeNo = EmployeeNo,
+        employee_instance.Nhif = Nhif,
+        employee_instance.DOE =DOE,
+        employee_instance.IDNO= IDNO,
+        employee_instance.Jobtitle =Jobtitle,
+        employee_instance.PassportNo=PassportNo,
+        employee_instance.Homecounty=Homecounty,
+        employee_instance.Countyresidence=Countyresidence,
+        employee_instance.salary =salary,
+        employee_instance.save()
+        return UpdateEmployee(employee=employee_instance)
+    success = True
 
 
+class DeleteEmployee(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
 
+    employee = graphene.Field(EmployeeType)
+
+    @staticmethod
+    def mutate(root, info, id):
+        employee_instance = Employee.objects.get(pk=id)
+        employee_instance.delete()
+
+        return None
 
 
 class Mutation(graphene.ObjectType):
-    # token_auth = graphql_jwt.ObtainJSONWebToken.Field()
-    # verify_token = graphql_jwt.Verify.Field()
-    # refresh_token = graphql_jwt.Refresh.Field()
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
     create_employee = CreateEmployee.Field()
     create_user = CreateUser.Field()
-    #update_employee = UpdateEmployee.Field()
-    #delete_employee = DeleteEmployee.Field()
+    update_employee = UpdateEmployee.Field()
+    delete_employee = DeleteEmployee.Field()
 
 schema = graphene.Schema(query=Query, mutation = Mutation)
 
@@ -278,28 +241,34 @@ schema = graphene.Schema(query=Query, mutation = Mutation)
 
 # mutation createMutation {
 #   createEmployee(
-#     id: 5,
-#     EmployeeNo: 4474798, 
-#     Nhif: "svdvjk", 
-#     DOE: "1992-05-05",
-#     IDNO: 5631, 
-#     Jobtitle: "hello world", 
-#     PassportNo: "sdfl",
-#     Homecounty: "Kisii", 
-#     Countyresidence: "Nairobi",
-#     salary: 12000
-#    ) {
+#         userId: 8,
+#       EmployeeNo: 12345,
+#       Nhif : "jgdsf546",
+#       DOE : "1971-11-30",
+#       IDNO: 45646,
+#       Jobtitle : "financial officer",
+#       PassportNo: "passport01",
+#       Homecounty: "lodwar",
+#       Countyresidence: "london",
+#       salary : 305878947,
+#     ) {
 #     employee {
-#       id
-#       EmployeeNo
-#       Nhif
-#       DOE
-#       IDNO
-#       Jobtitle
-#       PassportNo
-#       Homecounty
-#       Countyresidence
-#       salary
+#       user{
+#         username
+#       },
+#       EmployeeNo ,
+#       Nhif, 
+#       DOE,
+#       IDNO,
+#       Jobtitle,
+#       PassportNo,
+#       Homecounty,
+#       Countyresidence,
+#       salary,
 #     }
 #   }
 # }
+
+#   }
+# }
+
