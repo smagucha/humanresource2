@@ -149,8 +149,8 @@ class CreateEmployee(graphene.Mutation):
 
 class UpdateEmployee(graphene.Mutation):
     class Arguments:
-        employee_id = graphene.Int()
-        user_id =graphene.Int()
+        id = graphene.ID()
+        user_id =graphene.ID()
         EmployeeNo = graphene.Int()
         Nhif = graphene.String()
         DOE = graphene.Date()
@@ -162,25 +162,71 @@ class UpdateEmployee(graphene.Mutation):
         salary = graphene.Int()
 
     employee = graphene.Field(EmployeeType)
-    success = False
 
     @staticmethod
-    def mutate(root, info, employee_id,user_id,EmployeeNo,Nhif,DOE ,IDNO,Jobtitle ,PassportNo,Homecounty,Countyresidence,salary):
-        employee_instance = Employee.objects.get(pk=employee_id)
-        employee_instance.user_id = user_id,
-        employee_instance.EmployeeNo = EmployeeNo,
-        employee_instance.Nhif = Nhif,
-        employee_instance.DOE =DOE,
-        employee_instance.IDNO= IDNO,
-        employee_instance.Jobtitle =Jobtitle,
-        employee_instance.PassportNo=PassportNo,
-        employee_instance.Homecounty=Homecounty,
-        employee_instance.Countyresidence=Countyresidence,
-        employee_instance.salary =salary,
-        employee_instance.save()
-        return UpdateEmployee(employee=employee_instance)
-    success = True
+    def mutate(root, info, id,user_id,EmployeeNo,Nhif,DOE ,IDNO,Jobtitle ,PassportNo,Homecounty,Countyresidence,salary):
+        employee_instance = Employee.objects.get(pk=id)
+        if employee_instance:
+            employee_instance.user_id = user_id
+            employee_instance.EmployeeNo = EmployeeNo
+            employee_instance.Nhif = Nhif
+            employee_instance.DOE =DOE
+            employee_instance.IDNO= IDNO
+            employee_instance.Jobtitle =Jobtitle
+            employee_instance.PassportNo=PassportNo
+            employee_instance.Homecounty=Homecounty
+            employee_instance.Countyresidence=Countyresidence
+            employee_instance.salary =salary
+            employee_instance.save()
+            return UpdateEmployee(employee=employee_instance)
+        return UpdateEmployee(employee=None)
+   
 
+# class UpdateBook(graphene.Mutation):
+#     class Arguments:
+#         book_data = BookInput(required=True)
+
+#     book = graphene.Field(BookType)
+
+#     @staticmethod
+#     def mutate(root, info, book_data=None):
+
+#         book_instance = Book.objects.get(pk=book_data.id)
+
+#         if book_instance:
+#             book_instance.title = book_data.title
+#             book_instance.author = book_data.author
+#             book_instance.year_published = book_data.year_published
+#             book_instance.review = book_data.review
+#             book_instance.save()
+#             return UpdateBook(book=book_instance)
+#         return UpdateBook(book=None)
+# class UpdateMovie(graphene.Mutation):
+#     class Arguments:
+#         id = graphene.Int(required=True)
+#         input = MovieInput(required=True)
+
+#     ok = graphene.Boolean()
+#     movie = graphene.Field(MovieType)
+
+#     @staticmethod
+#     def mutate(root, info, id, input=None):
+#         ok = False
+#         movie_instance = Movie.objects.get(pk=id)
+#         if movie_instance:
+#             ok = True
+#             actors = []
+#             for actor_input in input.actors:
+#               actor = Actor.objects.get(pk=actor_input.id)
+#               if actor is None:
+#                 return UpdateMovie(ok=False, movie=None)
+#               actors.append(actor)
+#             movie_instance.title=input.title
+#             movie_instance.year=input.year
+#             movie_instance.save()
+#             movie_instance.actors.set(actors)
+#             return UpdateMovie(ok=ok, movie=movie_instance)
+#         return UpdateMovie(ok=ok, movie=None)
 
 class DeleteEmployee(graphene.Mutation):
     class Arguments:
