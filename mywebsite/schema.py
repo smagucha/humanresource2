@@ -5,8 +5,7 @@ from employee.models import Employee, Leave, Disciplinary, Skills
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 import graphql_jwt
-# import users.schema
-# import tracks.schema
+
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -23,7 +22,7 @@ class LeaveType(DjangoObjectType):
     class Meta:
         model = Leave
         fields = '__all__'
-
+        convert_choices_to_enum = True
 
 class  DisciplinaryType(DjangoObjectType):
     class Meta:
@@ -37,10 +36,10 @@ class SkillsType(DjangoObjectType):
         model = Skills
         fields = '__all__'
 
-
 class Query(graphene.ObjectType):
     all_employee = graphene.List(EmployeeType)
     all_Leave = graphene.List(LeaveType)
+    leave = graphene.Field(LeaveType, leave_id =graphene.Int())
     all_displinary = graphene.List(DisciplinaryType)
     all_skills = graphene.List(SkillsType)
     employee = graphene.Field(EmployeeType, employee_id =graphene.Int())
@@ -54,9 +53,12 @@ class Query(graphene.ObjectType):
     def resolve_employee(self, info, employee_id):
         return Employee.objects.get(pk=employee_id)
 
-    def resolve_Leave(root, info):
+    def resolve_all_Leave(root, info):
         # We can easily optimize query count in the resolve method
         return Leave.objects.all()
+
+    def resolve_leave(self, info, leave_id):
+        return Leave.objects.get(pk=leave_id)
 
     def resolve_all_discplinary(root, info):
         # We can easily optimize query count in the resolve method
@@ -74,8 +76,6 @@ class Query(graphene.ObjectType):
         if user.is_anonymous:
             raise Exception('Authentication Failure!')
         return user
-
-
 
 
 class CreateUser(graphene.Mutation):
@@ -98,20 +98,21 @@ class CreateUser(graphene.Mutation):
 
         return CreateUser(user=user)
 
-# class LeaveMutation(graphene.Mutation) :
-# 	class Arguments:
-# 		name = graphene.String(required = True)
+class createDisciplinary(graphene.Mutation):
+    class Arguments:
+        user_id = graphene.Int()
+        description = graphene.String()
 
-# 	leave = graphene.Field(LeaveType)
+    disciplinary = graphene.Field(DisciplinaryType)
 
-# 	@classmethod
-# 	def mutate(root, info, name):
-# 		leave =Leave(name = name)
-# 		leave.save()
-# 		return LeaveMutation(leave = leave)
 
-# class Mutation(graphene.ObjectType):
-# 	update_leave = LeaveMutation.Field()
+    def mutate(self, root, info, user_id, description):
+        disciplinary_instance = Disciplinary(
+            user_id = user_id,
+            description = description,
+            )
+        disciplinary_instance.save()
+        return CreateEmployee(disciplinary= disciplinary_instance)
 
 
 class CreateEmployee(graphene.Mutation):
@@ -131,7 +132,7 @@ class CreateEmployee(graphene.Mutation):
     employee = graphene.Field(EmployeeType)
 
     @classmethod
-    def mutate(self,root, info, user_id,EmployeeNo,Nhif,DOE ,IDNO,Jobtitle ,PassportNo,Homecounty,Countyresidence,salary):
+    def mutate(self, root, info, user_id,EmployeeNo,Nhif,DOE ,IDNO,Jobtitle ,PassportNo,Homecounty,Countyresidence,salary):
         employee_instance= Employee( 
             user_id = user_id,
             EmployeeNo = EmployeeNo,
@@ -180,53 +181,6 @@ class UpdateEmployee(graphene.Mutation):
             employee_instance.save()
             return UpdateEmployee(employee=employee_instance)
         return UpdateEmployee(employee=None)
-   
-
-# class UpdateBook(graphene.Mutation):
-#     class Arguments:
-#         book_data = BookInput(required=True)
-
-#     book = graphene.Field(BookType)
-
-#     @staticmethod
-#     def mutate(root, info, book_data=None):
-
-#         book_instance = Book.objects.get(pk=book_data.id)
-
-#         if book_instance:
-#             book_instance.title = book_data.title
-#             book_instance.author = book_data.author
-#             book_instance.year_published = book_data.year_published
-#             book_instance.review = book_data.review
-#             book_instance.save()
-#             return UpdateBook(book=book_instance)
-#         return UpdateBook(book=None)
-# class UpdateMovie(graphene.Mutation):
-#     class Arguments:
-#         id = graphene.Int(required=True)
-#         input = MovieInput(required=True)
-
-#     ok = graphene.Boolean()
-#     movie = graphene.Field(MovieType)
-
-#     @staticmethod
-#     def mutate(root, info, id, input=None):
-#         ok = False
-#         movie_instance = Movie.objects.get(pk=id)
-#         if movie_instance:
-#             ok = True
-#             actors = []
-#             for actor_input in input.actors:
-#               actor = Actor.objects.get(pk=actor_input.id)
-#               if actor is None:
-#                 return UpdateMovie(ok=False, movie=None)
-#               actors.append(actor)
-#             movie_instance.title=input.title
-#             movie_instance.year=input.year
-#             movie_instance.save()
-#             movie_instance.actors.set(actors)
-#             return UpdateMovie(ok=ok, movie=movie_instance)
-#         return UpdateMovie(ok=ok, movie=None)
 
 class DeleteEmployee(graphene.Mutation):
     class Arguments:
@@ -238,9 +192,31 @@ class DeleteEmployee(graphene.Mutation):
     def mutate(root, info, id):
         employee_instance = Employee.objects.get(pk=id)
         employee_instance.delete()
-
         return None
 
+class CreateLeave(graphene.Mutation):
+
+    class Agruments:
+        leave_id = graphene.Int()
+        user_id = graphene.Int()
+        typeofleave = graphene.String()
+        leavedatesapplied = graphene.Int()
+        Dateofleaveapplied = graphene.Date()
+        approved = graphene.String()
+
+    leave = graphene.Field(LeaveType)
+
+    @classmethod
+    def mutate(root, info, leave_id, user_id, typeofleave, Dateofleaveapplied, approved):
+        Leave_instance= Leave( 
+            leave_id = leave_id,
+            user_id =  user_id,
+            typeofleave =  typeofleave,
+            Dateofleaveapplied =Dateofleaveapplied,
+            approved= approved,
+        )
+        Leave_instance.save()
+        return CreateEmployee(leave=Leave_instance)
 
 class Mutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
@@ -250,40 +226,10 @@ class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
     update_employee = UpdateEmployee.Field()
     delete_employee = DeleteEmployee.Field()
+    create_leave = CreateLeave.Field()
+    create_disciplinary = createDisciplinary.Field()
 
 schema = graphene.Schema(query=Query, mutation = Mutation)
-
-
-
-
-# mutation createMutation {
-#   createEmployee(
-#     employeeData: {
-#       user : "4",
-#       EmployeeNo: 45446,
-#       Nhif : "bvn1231",
-#       DOE : "1992-01-02",
-#       IDNO: 45646,
-#       Jobtitle : "web designer",
-#       PassportNo: "fcgvbk",
-#       Homecounty: "kisumu",
-#       Countyresidence: "Mombasa",
-#       salary : 120000,
-#     }) {
-#     employee {
-#       user,
-#       EmployeeNo ,
-#       Nhif, 
-#       DOE,
-#       IDNO,
-#       Jobtitle,
-#       PassportNo,
-#       Homecounty,
-#       Countyresidence,
-#       salary,
-#     }
-#   }
-# }
 
 # mutation createMutation {
 #   createEmployee(
@@ -318,3 +264,38 @@ schema = graphene.Schema(query=Query, mutation = Mutation)
 #   }
 # }
 
+
+# mutation updateMutation {
+#   updateEmployee(
+#       id: 2,
+#             userId:2,
+#         EmployeeNo: 12345,
+#       Nhif : "Nhif001",
+#       DOE : "1971-11-30",
+#       IDNO: 45646,
+#       Jobtitle : "financial officer",
+#       PassportNo: "passport01",
+#       Homecounty: "lodwar",
+#       Countyresidence: "london",
+#       salary : 10000,
+      
+#   ){
+#    employee{
+#         id,
+#         user{
+#         id,
+#         username,
+#       }
+#       EmployeeNo ,
+#       Nhif, 
+#       DOE,
+#       IDNO,
+#       Jobtitle,
+#       PassportNo,
+#       Homecounty,
+#       Countyresidence,
+#       salary,
+#     }
+#   }
+    
+# }
