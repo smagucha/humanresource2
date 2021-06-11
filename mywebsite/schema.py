@@ -1,7 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 from django.contrib.auth.mixins import LoginRequiredMixin
-from employee.models import Employee, Leave, Disciplinary, Skills
+from employee.models import Employee, Leave, Disciplinary, Skills, Department
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 import graphql_jwt
@@ -24,6 +24,11 @@ class LeaveType(DjangoObjectType):
         fields = '__all__'
         convert_choices_to_enum = True
 
+class DepartmentType(DjangoObjectType):
+    class Meta:
+        model = Department
+        fields = '__all__'
+
 class  DisciplinaryType(DjangoObjectType):
     class Meta:
         model = Disciplinary
@@ -45,7 +50,15 @@ class Query(graphene.ObjectType):
     employee = graphene.Field(EmployeeType, employee_id =graphene.Int())
     me = graphene.Field(UserType)
     users = graphene.List(UserType)
- 
+    all_department = graphene.List(DepartmentType)
+    department= graphene.Field(DepartmentType, department_id = graphene.Int())
+    
+    def resolve_all_department(root, info):
+        return Department.objects.all()
+
+    def resolve_department(self, info, department_id):
+        return Department.objects.get(pk=department_id)
+
     def resolve_all_employee(root, info):
         # We can easily optimize query count in the resolve method
         return Employee.objects.all()
@@ -241,6 +254,48 @@ class DeleteSkills(graphene.Mutation):
         skills_instance.delete()
         return None
 
+class Createdepartment(graphene.Mutation):
+
+    class Arguments:
+        name = graphene.String()
+
+    deparment = graphene.Field(DepartmentType)
+
+    def mutate(self, root, name):
+        department_instance = Department(
+            name = name,
+            )
+        department_instance.save()
+        return Createdepartment(department = department_instance)
+
+class UpdateDepartment(graphene.Mutation):
+
+    class Arguments:
+        id = graphene.ID()
+        Name = graphene.String()
+
+    department = graphene.Field(DepartmentType)
+
+    def mutate(self, root, id, Name):
+        department_instance = Department.objects.get(pk=id)
+        if department_instance:
+            department_instance.id = id
+            department_instance.Name = Name
+            department_instance.save()
+            return UpdateDepartment(department=department_instance)
+        return UpdateDepartment(department=None)
+
+class DeleteDepartment(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+
+    department = graphene.Field(SkillsType)
+
+    @staticmethod
+    def mutate(root, info, id):
+        department_instance = Department.objects.get(pk=id)
+        department_instance.delete()
+        return None
 
 class Mutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
@@ -253,6 +308,9 @@ class Mutation(graphene.ObjectType):
     create_skills = CreateSkills.Field()
     update_skills = UpdateSkills.Field()
     delete_skills = DeleteSkills.Field()
+    create_department = Createdepartment.Field()
+    update_department = UpdateDepartment.Field()
+    delete_department = DeleteDepartment.Field()
 
 
 schema = graphene.Schema(query=Query, mutation = Mutation)
