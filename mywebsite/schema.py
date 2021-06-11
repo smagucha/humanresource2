@@ -98,21 +98,7 @@ class CreateUser(graphene.Mutation):
 
         return CreateUser(user=user)
 
-class createDisciplinary(graphene.Mutation):
-    class Arguments:
-        user_id = graphene.Int()
-        description = graphene.String()
 
-    disciplinary = graphene.Field(DisciplinaryType)
-
-
-    def mutate(self, root, info, user_id, description):
-        disciplinary_instance = Disciplinary(
-            user_id = user_id,
-            description = description,
-            )
-        disciplinary_instance.save()
-        return CreateEmployee(disciplinary= disciplinary_instance)
 
 
 class CreateEmployee(graphene.Mutation):
@@ -194,29 +180,67 @@ class DeleteEmployee(graphene.Mutation):
         employee_instance.delete()
         return None
 
-class CreateLeave(graphene.Mutation):
-
-    class Agruments:
-        leave_id = graphene.Int()
+class CreateDisciplinary(graphene.Mutation):
+    class Arguments:
         user_id = graphene.Int()
-        typeofleave = graphene.String()
-        leavedatesapplied = graphene.Int()
-        Dateofleaveapplied = graphene.Date()
-        approved = graphene.String()
+        description = graphene.String()
 
-    leave = graphene.Field(LeaveType)
+    disciplinary = graphene.Field(DisciplinaryType)
 
-    @classmethod
-    def mutate(root, info, leave_id, user_id, typeofleave, Dateofleaveapplied, approved):
-        Leave_instance= Leave( 
-            leave_id = leave_id,
-            user_id =  user_id,
-            typeofleave =  typeofleave,
-            Dateofleaveapplied =Dateofleaveapplied,
-            approved= approved,
-        )
-        Leave_instance.save()
-        return CreateEmployee(leave=Leave_instance)
+    def mutate(self, info, user_id, description):
+        disciplinary_instance = Disciplinary(
+            user_id = user_id,
+            description = description
+            )
+        disciplinary_instance.save()
+        return CreateDisciplinary(disciplinary=disciplinary_instance)
+
+class CreateSkills(graphene.Mutation):
+    class Arguments:
+        user_id =graphene.Int()
+        description = graphene.String()
+
+    skills = graphene.Field(SkillsType)
+
+    def mutate(self, root, user_id, description):
+        skills_instance = Skills(
+            user_id = user_id,
+            description = description
+            )
+        skills_instance.save()
+        return CreateSkills(skills = skills_instance)
+
+class UpdateSkills(graphene.Mutation):
+
+    class Arguments:
+        id = graphene.ID()
+        user_id =graphene.Int()
+        description = graphene.String()
+
+    skills = graphene.Field(SkillsType)
+
+    def mutate(self, root, id, user_id, description):
+        skills_instance = Skills.objects.get(pk=id)
+        if skills_instance:
+            skills_instance.id = id
+            skills_instance.user_id = user_id
+            skills_instance.description = description
+            skills_instance.save()
+            return UpdateSkills(skills=skills_instance)
+        return UpdateSkills(skills=None)
+
+class DeleteSkills(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+
+    skills = graphene.Field(SkillsType)
+
+    @staticmethod
+    def mutate(root, info, id):
+        skills_instance = Skills.objects.get(pk=id)
+        skills_instance.delete()
+        return None
+
 
 class Mutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
@@ -225,9 +249,11 @@ class Mutation(graphene.ObjectType):
     create_employee = CreateEmployee.Field()
     create_user = CreateUser.Field()
     update_employee = UpdateEmployee.Field()
-    delete_employee = DeleteEmployee.Field()
-    create_leave = CreateLeave.Field()
-    create_disciplinary = createDisciplinary.Field()
+    create_disciplinary = CreateDisciplinary.Field()
+    create_skills = CreateSkills.Field()
+    update_skills = UpdateSkills.Field()
+    delete_skills = DeleteSkills.Field()
+
 
 schema = graphene.Schema(query=Query, mutation = Mutation)
 
@@ -298,4 +324,11 @@ schema = graphene.Schema(query=Query, mutation = Mutation)
 #     }
 #   }
     
+# }
+# mutation{
+#   deleteSkills(id:5){
+#     skills{
+#       id
+#     }
+#   }
 # }
