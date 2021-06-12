@@ -193,20 +193,6 @@ class DeleteEmployee(graphene.Mutation):
         employee_instance.delete()
         return None
 
-class CreateDisciplinary(graphene.Mutation):
-    class Arguments:
-        user_id = graphene.Int()
-        description = graphene.String()
-
-    disciplinary = graphene.Field(DisciplinaryType)
-
-    def mutate(self, info, user_id, description):
-        disciplinary_instance = Disciplinary(
-            user_id = user_id,
-            description = description
-            )
-        disciplinary_instance.save()
-        return CreateDisciplinary(disciplinary=disciplinary_instance)
 
 class CreateSkills(graphene.Mutation):
     class Arguments:
@@ -297,20 +283,73 @@ class DeleteDepartment(graphene.Mutation):
         department_instance.delete()
         return None
 
+class CreateDisciplinary(graphene.Mutation):
+    class Arguments:
+        user_id = graphene.Int()
+        description = graphene.String()
+
+    disciplinary = graphene.Field(DisciplinaryType)
+
+    def mutate(self, info, user_id, description):
+        disciplinary_instance = Disciplinary(
+            user_id = user_id,
+            description = description
+            )
+        disciplinary_instance.save()
+        return CreateDisciplinary(disciplinary=disciplinary_instance)
+class UpdateDisciplinary(graphene.Mutation):
+
+    class Arguments:
+        id = graphene.ID()
+        user_id = graphene.Int()
+        description = graphene.String()
+
+    disciplinary = graphene.Field(DisciplinaryType)
+
+    def mutate(self, root,id, user_id, description):
+        disciplinary_instance = Disciplinary.objects.get(pk=id)
+        if disciplinary_instance:
+            disciplinary_instance.id = id
+            disciplinary_instance.user_id = user_id
+            disciplinary_instance.description = description
+            disciplinary_instance.save()
+            return UpdateDisciplinary(disciplinary=disciplinary_instance)
+        return UpdateDisciplinary(disciplinary=None)
+
+
+class DeleteDisciplinary(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+
+    disciplinary = graphene.Field(DisciplinaryType)
+
+    @staticmethod
+    def mutate(root, info, id):
+        disciplinary_instance = Disciplinary.objects.get(pk=id)
+        disciplinary_instance.delete()
+        return None
+
+
 class Mutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
-    create_employee = CreateEmployee.Field()
     create_user = CreateUser.Field()
+    create_employee = CreateEmployee.Field()
     update_employee = UpdateEmployee.Field()
-    create_disciplinary = CreateDisciplinary.Field()
-    create_skills = CreateSkills.Field()
-    update_skills = UpdateSkills.Field()
-    delete_skills = DeleteSkills.Field()
+    delete_employee = DeleteEmployee.Field()
     create_department = Createdepartment.Field()
     update_department = UpdateDepartment.Field()
     delete_department = DeleteDepartment.Field()
+    create_skills = CreateSkills.Field()
+    update_skills = UpdateSkills.Field()
+    delete_skills = DeleteSkills.Field()
+    create_disciplinary = CreateDisciplinary.Field()
+    update_disciplinary = UpdateDisciplinary.Field()
+    delete_disciplinary = DeleteDisciplinary.Field()
+
+    
+
 
 
 schema = graphene.Schema(query=Query, mutation = Mutation)
