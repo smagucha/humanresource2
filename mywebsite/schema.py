@@ -5,7 +5,7 @@ from employee.models import Employee, Leave, Disciplinary, Skills, Department
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 import graphql_jwt
-
+#from employee.enum import leavetype, approvement
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -329,6 +329,38 @@ class DeleteDisciplinary(graphene.Mutation):
         disciplinary_instance.delete()
         return None
 
+# class CreateLeave(graphene.Mutation):
+
+#     class Arguments:
+#         user_id = graphene.Int()
+#         typeofleave = graphene.Field(graphene.Enum.from_enum(typeofleave))
+#         leavedatesapplied = graphene.Int()
+#         Dateofleaveapplied = graphene.Date()
+#         approved = graphene.Field(graphene.Enum.from_enum(approved))
+
+#     leave = graphene.Field(LeaveType)
+
+#     def mutate(self, info, user_id,typeofleave,leavedatesapplied, Dateofleaveapplied,approved):
+#         leave_instance = Leave(
+#         user_id = user_id,
+#         typeofleave = typeofleave,
+#         leavedatesapplied = leavedatesapplied,
+#         Dateofleaveapplied =Dateofleaveapplied,
+#         approved = approved,
+#             )
+#         leave_instance.save()
+#         return CreateLeave(leave=leave_instance)
+class DeleteLeave(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+
+    leave = graphene.Field(LeaveType)
+
+    @staticmethod
+    def mutate(root, info, id):
+        leave_instance = Leave.objects.get(pk=id)
+        leave_instance.delete()
+        return None
 
 class Mutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
@@ -347,12 +379,12 @@ class Mutation(graphene.ObjectType):
     create_disciplinary = CreateDisciplinary.Field()
     update_disciplinary = UpdateDisciplinary.Field()
     delete_disciplinary = DeleteDisciplinary.Field()
-
-    
-
-
+    #create_leave = CreateLeave.Field()
+    delete_leave =DeleteLeave.Field()
 
 schema = graphene.Schema(query=Query, mutation = Mutation)
+
+
 
 # mutation createMutation {
 #   createEmployee(
