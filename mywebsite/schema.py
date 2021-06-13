@@ -6,6 +6,26 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 import graphql_jwt
 #from employee.enum import leavetype, approvement
+from enum import Enum
+
+class leavetype (Enum):   # A subclass of Enum
+    Sick = 'sick'
+    Maternity = 'Maternity'
+    Paternity = 'Paternity'
+    bereavement = 'bereavement'
+    Compassionate = 'bereavement'
+    unpaid = 'unpaid'
+    Annual= 'Annual'
+    approved = 'approved'
+    notapproved = 'notapproved'
+
+
+class approvement(Enum):
+    approved ='approved'
+    notapproved ='notapproved'
+
+SomeEnumSchema = graphene.Enum.from_enum(leavetype)
+SomeEnumSchema2 = graphene.Enum.from_enum(approvement)
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -329,27 +349,27 @@ class DeleteDisciplinary(graphene.Mutation):
         disciplinary_instance.delete()
         return None
 
-# class CreateLeave(graphene.Mutation):
+class CreateLeave(graphene.Mutation):
 
-#     class Arguments:
-#         user_id = graphene.Int()
-#         typeofleave = graphene.Field(graphene.Enum.from_enum(typeofleave))
-#         leavedatesapplied = graphene.Int()
-#         Dateofleaveapplied = graphene.Date()
-#         approved = graphene.Field(graphene.Enum.from_enum(approved))
+    class Arguments:
+        user_id = graphene.Int()
+        typeofleave = SomeEnumSchema(required = True)
+        leavedatesapplied = graphene.Int()
+        Dateofleaveapplied = graphene.Date()
+        approved = SomeEnumSchema2(required = True)
 
-#     leave = graphene.Field(LeaveType)
+    leave = graphene.Field(LeaveType)
 
-#     def mutate(self, info, user_id,typeofleave,leavedatesapplied, Dateofleaveapplied,approved):
-#         leave_instance = Leave(
-#         user_id = user_id,
-#         typeofleave = typeofleave,
-#         leavedatesapplied = leavedatesapplied,
-#         Dateofleaveapplied =Dateofleaveapplied,
-#         approved = approved,
-#             )
-#         leave_instance.save()
-#         return CreateLeave(leave=leave_instance)
+    def mutate(self, info, user_id,typeofleave,leavedatesapplied, Dateofleaveapplied,approved):
+        leave_instance = Leave(
+        user_id = user_id,
+        typeofleave = typeofleave,
+        leavedatesapplied = leavedatesapplied,
+        Dateofleaveapplied =Dateofleaveapplied,
+        approved = approved,
+            )
+        leave_instance.save()
+        return CreateLeave(leave=leave_instance)
 class DeleteLeave(graphene.Mutation):
     class Arguments:
         id = graphene.ID()
@@ -379,7 +399,7 @@ class Mutation(graphene.ObjectType):
     create_disciplinary = CreateDisciplinary.Field()
     update_disciplinary = UpdateDisciplinary.Field()
     delete_disciplinary = DeleteDisciplinary.Field()
-    #create_leave = CreateLeave.Field()
+    create_leave = CreateLeave.Field()
     delete_leave =DeleteLeave.Field()
 
 schema = graphene.Schema(query=Query, mutation = Mutation)
