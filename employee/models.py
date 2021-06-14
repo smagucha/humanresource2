@@ -86,8 +86,14 @@ class Disciplinary(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	description = models.TextField()
 
+	class Meta:
+		verbose_name_plural = "Disciplinaries"
+
 class Skills(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	description = models.TextField()
+
+	class Meta:
+		verbose_name_plural = "skills"
 
 	
