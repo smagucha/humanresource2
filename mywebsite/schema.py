@@ -353,10 +353,10 @@ class CreateLeave(graphene.Mutation):
 
     class Arguments:
         user_id = graphene.Int()
-        typeofleave = SomeEnumSchema(required = True)
+        typeofleave = graphene.String(required = True)
         leavedatesapplied = graphene.Int()
         Dateofleaveapplied = graphene.Date()
-        approved = SomeEnumSchema2(required = True)
+        approved = graphene.String(required = True)
 
     leave = graphene.Field(LeaveType)
 
