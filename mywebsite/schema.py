@@ -30,7 +30,7 @@ SomeEnumSchema2 = graphene.Enum.from_enum(approvement)
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        fields = '__all__'
+        only_fields = ('id','username', 'first_name', 'last_name','email')
 
 class EmployeeType(DjangoObjectType):
     class Meta:
@@ -131,6 +131,41 @@ class CreateUser(graphene.Mutation):
 
         return CreateUser(user=user)
 
+class UpdateUser(graphene.Mutation):
+
+    user = graphene.Field(UserType)
+
+    class Arguments:
+        id = graphene.ID()
+        username = graphene.String(required=True)
+        first_name =graphene.String(required=True)
+        last_name =graphene.String(required=True)
+        email = graphene.String(required=True)
+
+    @staticmethod
+    def mutate(self, root, id, username, first_name,last_name, email):
+        user_instance = User.objects.get(pk=id)
+        if user_instance:
+            user_instance.id = id
+            user_instance.username = username
+            user_instance.first_name = first_name
+            user_instance.last_name = last_name
+            user_instance.email =email
+            user_instance.save()
+            return UpdateUser(user=user_instance)
+        return UpdateUser(user=None)
+
+class DeleteUser(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+
+    users = graphene.Field(UserType)
+
+    @staticmethod
+    def mutate(root, info, id):
+        user_instance = User.objects.get(pk=id)
+        user_instance.delete()
+        return None
 
 
 
@@ -387,6 +422,8 @@ class Mutation(graphene.ObjectType):
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
     create_user = CreateUser.Field()
+    update_user = UpdateUser.Field()
+    delete_user = DeleteUser.Field()
     create_employee = CreateEmployee.Field()
     update_employee = UpdateEmployee.Field()
     delete_employee = DeleteEmployee.Field()
