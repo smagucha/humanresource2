@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 import graphql_jwt
 #from employee.enum import leavetype, approvement
 from enum import Enum
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class leavetype (Enum):   # A subclass of Enum
     Sick = 'sick'
@@ -61,7 +62,7 @@ class SkillsType(DjangoObjectType):
         model = Skills
         fields = '__all__'
 
-class Query(graphene.ObjectType):
+class Query(LoginRequiredMixin, graphene.ObjectType):
     all_employee = graphene.List(EmployeeType)
     all_Leave = graphene.List(LeaveType)
     leave = graphene.Field(LeaveType, leave_id =graphene.Int())
@@ -75,7 +76,6 @@ class Query(graphene.ObjectType):
     
     def resolve_all_department(root, info):
         return Department.objects.all()
-
     def resolve_department(self, info, department_id):
         return Department.objects.get(pk=department_id)
 
@@ -417,10 +417,12 @@ class DeleteLeave(graphene.Mutation):
         leave_instance.delete()
         return None
 
-class Mutation(graphene.ObjectType):
+
+class Mutation(LoginRequiredMixin, graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
+    revoke_token = graphql_jwt.Revoke.Field()
     create_user = CreateUser.Field()
     update_user = UpdateUser.Field()
     delete_user = DeleteUser.Field()
@@ -480,8 +482,8 @@ schema = graphene.Schema(query=Query, mutation = Mutation)
 # mutation updateMutation {
 #   updateEmployee(
 #       id: 2,
-#             userId:2,
-#         EmployeeNo: 12345,
+#       userId:2,
+#       EmployeeNo: 12345,
 #       Nhif : "Nhif001",
 #       DOE : "1971-11-30",
 #       IDNO: 45646,

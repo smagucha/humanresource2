@@ -91,7 +91,7 @@ def Addskills(request):
 		if form.is_valid():
 			form.save()
 			form =  SkillsForm()
-			return redirect('addskills')	
+			return redirect('listskill')	
 	else:
 		form =  SkillsForm ()
 		context ={
@@ -235,6 +235,20 @@ def deleteleave(request, id):
 		'obj':obj,
 	}
 	return render(request, 'employee/deleteleave.html', context)
+
+@login_required(login_url='/accounts/login/')
+def deleteskills(request, id):
+	obj = Skills.objects.get(id = id)
+	if request.method == 'POST':
+		obj.delete()
+		return redirect('listskill')
+	context ={
+		'nav': 'delete skills',
+		'title':'delete skills',
+		'obj':obj,
+	}
+	return render(request, 'employee/deleteskills.html', context)
+
 
 @login_required(login_url='/accounts/login/')
 def listSkills(request):
