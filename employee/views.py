@@ -287,6 +287,25 @@ def Useremployee(request):
 		return render(request, 'employee/editprofile.html', {'form': form})
 
 
+@login_required(login_url='/accounts/login/')
+def employeepage(request):
+	x = Employee.objects.filter(user = request.user )
+	y = Leave.objects.filter(user = request.user )
+	z = Disciplinary.objects.filter(user = request.user )
+	a = Skills.objects.filter(user = request.user )
+
+
+	context ={
+		'x':x,
+		'y': y,
+		'z' : z,
+		'a': a,
+
+
+	}
+	return render(request, 'employee/employeepage.html', context)
+
+
 
 
 
