@@ -52,8 +52,6 @@ def AddLeave(request):
 	if request.method =='POST':
 		form =  LeaveForm(request.POST)
 		user = request.POST.get('user')
-		leaveobj = Leave.objects.filter(user = user)
-		print(leaveobj)
 		if form.is_valid():
 			form.save()
 			form =  LeaveForm()
@@ -300,28 +298,5 @@ def employeepage(request):
 		'y': y,
 		'z' : z,
 		'a': a,
-
-
 	}
 	return render(request, 'employee/employeepage.html', context)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

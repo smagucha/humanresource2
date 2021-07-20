@@ -21,7 +21,7 @@ urlpatterns =[
 	path('listskill', views.listSkills, name='listskill'),
 	path('listdisciplinary', views.listdicplinary, name='listdisciplinary'),
 	path('Useremployee', views.Useremployee, name='Useremployee'),
-	path('employeepage', views.employeepage, name='employeepage')
+	path('employeepage', views.employeepage, name='employeepage'),
 	]
 
 	

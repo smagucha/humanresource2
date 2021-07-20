@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Employee(models.Model):
-	user = models.ForeignKey(User, on_delete=models.CASCADE, null = True, blank = True, unique = True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE, null = True, blank = True)
 	EmployeeNo = models.PositiveIntegerField()
 	Nhif = models.CharField(max_length =50)
 	DOE = models.DateField()

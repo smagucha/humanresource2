@@ -3,7 +3,8 @@
 {{title}}
 {%endblock title%}
 {%block content%}
-<a href="{% url 'addemployee'%}"> add employee</a>
+<link href = "https://fonts.googleapis.com/icon?family=Material+Icons" rel = "stylesheet">
+<a href="{% url 'addemployee'%}"> <i class = "material-icons">person_add</i></a>
 	<table class = 'table'>
 		<tr>
 			<thead  class= 'text-primary'>
@@ -86,10 +87,10 @@
 				{{object.salary}}
 			</td>
 			<td>
-				<a href="{% url 'updateemployee' object.id %}">update</a>
+				<a href="{% url 'updateemployee' object.id %}"><i class = "material-icons">update</i></a>
 			</td>
 			<td>
-				<a href="{% url 'deleteemployee' object.id %}"> delete</a>
+				<a href="{% url 'deleteemployee' object.id %}"> <i class = "material-icons">remove_person</i></a>
 			</td>
 			</tr>
 			{%endfor%}	

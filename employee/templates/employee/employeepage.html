@@ -1,16 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>employee page</title>
-</head>
-<body>
-	<p>employe: {{x}}</p>
-	<p>nvkf {%for i in x%}{{x.user}}{%endfor%}</p>
+{% extends 'employee/base.html'%}
+{%block title%}
+{{title}}
+{%endblock title%}
+{%block content%}
+<p>employe: {{x}}</p>
+	<p>nvkf {% for i in x %}{{x.user}}{%endfor%}</p>
 	<p>leave:{{y}}</p>
 	<p>dis: {{z}}</p>	
 	<p>skills: {{a}}</p>
 	<p>current login user: {{user.username}}</p>
-</body>
-</html>
+{%endblock%}
