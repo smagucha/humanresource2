@@ -5,6 +5,7 @@ from employee.models import Employee, Leave, Disciplinary, Skills, Department
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 import graphql_jwt
+from django.shortcuts import get_object_or_404
 #from employee.enum import leavetype, approvement
 from enum import Enum
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -85,8 +86,11 @@ class Query(LoginRequiredMixin, graphene.ObjectType):
         return Employee.objects.all()
 
     def resolve_employee(self, info, employee_id):
-        return Employee.objects.get(pk=employee_id)
-
+        try:
+            return Employee.objects.get(pk=employee_id)
+        except Employee.DoesNotExist:
+            return None
+            
     def resolve_all_Leave(root, info):
         # We can easily optimize query count in the resolve method
         return Leave.objects.all()
