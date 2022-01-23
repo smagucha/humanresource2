@@ -68,11 +68,12 @@ class Query(LoginRequiredMixin, graphene.ObjectType):
     leave = graphene.Field(LeaveType, leave_id =graphene.Int())
     all_displinary = graphene.List(DisciplinaryType)
     all_skills = graphene.List(SkillsType)
-    employee = graphene.Field(EmployeeType, employee_id =graphene.Int())
     me = graphene.Field(UserType)
     users = graphene.List(UserType)
     all_department = graphene.List(DepartmentType)
-    department= graphene.Field(DepartmentType, department_id = graphene.Int())
+    employee = graphene.Field(EmployeeType, employee_id =graphene.Int())
+    department = graphene.Field(DepartmentType, department_id =graphene.Int())
+    leave = graphene.Field(LeaveType, leave_id=graphene.Int())
     
     def resolve_all_department(root, info):
         return Department.objects.all()
